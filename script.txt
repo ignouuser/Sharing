@@ -1,0 +1,100 @@
+-- DROP SCHEMA dbo;
+
+-- TechnoCric24.dbo.FinalList definition
+
+-- Drop table
+
+-- DROP TABLE TechnoCric24.dbo.FinalList;
+
+CREATE TABLE TechnoCric24.dbo.FinalList (
+	PlayerID varchar(20) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+	TeamID int NULL,
+	Amount numeric(5,2) NULL,
+	InsertDate datetime NULL,
+	CONSTRAINT FinalList_PK PRIMARY KEY (PlayerID)
+);
+
+
+-- TechnoCric24.dbo.Players definition
+
+-- Drop table
+
+-- DROP TABLE TechnoCric24.dbo.Players;
+
+CREATE TABLE TechnoCric24.dbo.Players (
+	Name varchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	FullName varchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	PNo varchar(20) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+	Gender varchar(20) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	LocationOfPosting varchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	Department varchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	InterestedToParticipate varchar(10) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	TShirtSize varchar(10) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	Skill varchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	BattingSkill int NULL,
+	BowlingSkill int NULL,
+	ParticipatedInTechnoCric22 varchar(10) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	TechnoCric22TeamName varchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	TeamName varchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	Matches int NULL,
+	CricheroesScore float NULL,
+	SelfScore float NULL,
+	ConsolidatedScore float NULL,
+	BasePrice numeric(5,1) NULL,
+	BasePriceRoundOff numeric(5,1) NULL,
+	CONSTRAINT PK_Playersdev PRIMARY KEY (PNo)
+);
+
+
+-- TechnoCric24.dbo.Teams definition
+
+-- Drop table
+
+-- DROP TABLE TechnoCric24.dbo.Teams;
+
+CREATE TABLE TechnoCric24.dbo.Teams (
+	TeamID int IDENTITY(1,1) NOT NULL,
+	TeamName varchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	TeamCaptain varchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	Player1 varchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	Player2 varchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	Player3 varchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	CONSTRAINT PK_Teamsdev PRIMARY KEY (TeamID)
+);
+
+
+-- dbo.V_Bidding source
+
+CREATE VIEW dbo.V_Bidding AS
+
+SELECT Name,  PNo, Gender, Skill,Department, BattingSkill, BowlingSkill, BasePriceRoundOff
+FROM TechnoCric24.dbo.Players where PNo not in (select playerid from FinalList fl);
+
+
+-- dbo.V_Dashboard source
+
+CREATE VIEW [dbo].[V_Dashboard]
+AS
+SELECT        dbo.FinalList.TeamID, dbo.Players.Name as PlayerName, dbo.Players.Gender, dbo.FinalList.Amount 
+FROM            dbo.FinalList INNER JOIN
+                         dbo.Players ON dbo.FinalList.PlayerID = dbo.Players.PNo ;
+
+
+-- dbo.V_Final_Users source
+
+CREATE VIEW [dbo].[V_Final_Users]
+AS
+SELECT    dbo.Players.PNo ,  dbo.Players.Name,dbo.Players.Department , dbo.FinalList.Amount, dbo.Teams.TeamName, dbo.FinalList.TeamID, dbo.Players.Gender
+FROM           dbo.Players INNER JOIN
+                         dbo.FinalList ON dbo.Players.PNo  = dbo.FinalList.PlayerID INNER JOIN
+                         dbo.Teams ON dbo.FinalList.TeamID  = dbo.Teams.TeamID;
+
+
+-- dbo.V_Players source
+
+-- dbo.V_Players source
+
+CREATE VIEW dbo.V_Players AS
+SELECT PNo, Name, FullName,  Gender, LocationOfPosting, Department, InterestedToParticipate, Skill, BattingSkill, BowlingSkill, ParticipatedInTechnoCric22, TechnoCric22TeamName, TeamName, Matches, CricheroesScore, SelfScore, ConsolidatedScore, BasePrice, BasePriceRoundOff
+FROM TechnoCric24.dbo.Players;
+;
